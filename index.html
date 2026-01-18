@@ -4,54 +4,137 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JIECEP-IBC Verifier</title>
+  
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --primary: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
-      --bg: #1e1e1e;
+      --bg-dark: #121212;
+      --card-bg: #1e1e1e;
+      --nav-bg: rgba(18, 18, 18, 0.95);
       --border: #333333;
-    }
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 15px; background: transparent; color: white; display: flex; justify-content: center; }
-    .container { background: var(--bg); border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-sizing: border-box; }
-    .logo-box { width: 50px; height: 50px; background: var(--primary); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-    h2 { margin: 0; font-size: 18px; text-align: center; margin-bottom: 20px; }
-    
-    /* Sleek Auto-fill Notification */
-    #auto-hint { 
-      display: none; 
-      background: rgba(23, 155, 196, 0.1); 
-      border: 1px solid #179bc4; 
-      padding: 10px; 
-      border-radius: 8px; 
-      margin-bottom: 15px; 
-      font-size: 12px; 
-      text-align: center;
-      cursor: pointer;
+      --text: #ffffff;
     }
 
-    input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; }
-    button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-    #result { margin-top: 20px; display: none; background: #252525; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
-    .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
-    .label { color: #666; font-size: 9px; text-transform: uppercase; display: block; }
-    .val { font-size: 13px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-dark);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Mimicking Google Sites Navigation */
+    .nav-bar {
+      width: 100%;
+      height: 64px;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: 20px;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+      border-bottom: 2px solid #179bc4;
+      padding-bottom: 5px;
+    }
+
+    /* Content Styling */
+    .content-area {
+      padding: 40px 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+    }
+
+    .logo-box {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      margin: 0 auto 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    h2 { margin: 0; font-size: 20px; text-align: center; margin-bottom: 20px; }
+    
+    input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; font-family: 'Inter'; }
+    button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    
+    #result { margin-top: 25px; display: none; background: #252525; padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+    .data-row { margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    .label { color: #666; font-size: 10px; text-transform: uppercase; display: block; font-weight: 600; }
+    .val { font-size: 14px; margin-top: 2px; display: block; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo-box">IBC</div>
-  <h2>JIECEP-IBC Verifier</h2>
-  
-  <div id="auto-hint" onclick="manualTrigger()">
-    ✨ <b>Scan Detected!</b> Tap here to auto-fill ID.
-  </div>
 
-  <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
-  <button onclick="checkID()">Verify Member</button>
-  <div id="result"></div>
-</div>
+  <nav class="nav-bar">
+    <div class="nav-brand">JIECEP-IBC</div>
+    <div class="nav-links">
+      <a href="https://sites.google.com/view/jiecep-ibc/home">HOME</a>
+      <a href="https://sites.google.com/view/jiecep-ibc/verify">VERIFY</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <div class="container">
+      <div class="logo-box">IBC</div>
+      <h2>Member Verification</h2>
+      
+      <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
+      <button onclick="checkID()">Check Registry</button>
+      
+      <div id="result"></div>
+    </div>
+  </div>
 
 <script>
   // YOUR FIREBASE CONFIG
@@ -65,43 +148,32 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  let detectedID = "";
-
-  function checkID(providedID) {
-    const id = providedID || document.getElementById('memberID').value.trim().toUpperCase();
+  function checkID() {
+    const id = document.getElementById('memberID').value.trim().toUpperCase();
     if(!id) return;
     db.ref('members/' + id).once('value', (snapshot) => {
       const res = document.getElementById('result');
       res.style.display = "block";
       if (snapshot.exists()) {
         const d = snapshot.val();
-        let html = `<div>`;
+        let html = `<div><span style="color:#00b894; font-weight:700; font-size:12px; margin-bottom:10px; display:block;">● VERIFIED ACTIVE</span>`;
         for (let k in d) {
           let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
           html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
         }
         res.innerHTML = html + `</div>`;
       } else {
-        res.innerHTML = `<div style="color:#fc8181;">Record not found.</div>`;
+        res.innerHTML = `<div style="color:#fc8181; font-size:13px; text-align:center;">ID "${id}" not found in 2026 registry.</div>`;
       }
     });
   }
 
-  function manualTrigger() {
-    if(detectedID) {
-      document.getElementById('memberID').value = detectedID;
-      checkID(detectedID);
-      document.getElementById('auto-hint').style.display = "none";
-    }
-  }
-
   window.onload = function() {
-    // Attempt to grab from URL
     const params = new URLSearchParams(window.location.search);
-    detectedID = params.get('id');
-
-    if (detectedID) {
-      document.getElementById('auto-hint').style.display = "block";
+    const id = params.get('id');
+    if (id) {
+      document.getElementById('memberID').value = id.toUpperCase();
+      setTimeout(checkID, 800);
     }
   };
 </script>
