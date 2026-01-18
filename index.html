@@ -72,9 +72,9 @@
 
     .nav-links a:hover { opacity: 1; color: var(--accent); }
 
-    /* Main Content - No Dead Space */
+    /* Main Content */
     .content-area {
-      flex: 1; /* Pushes footer down */
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -86,11 +86,10 @@
       background: var(--card-bg);
       border-radius: 24px;
       padding: 40px 30px;
-      max-width: 440px;
+      max-width: 500px; /* Slightly wider for row layout */
       width: 100%;
       border: 1px solid var(--border);
       box-sizing: border-box;
-      text-align: center;
     }
 
     .header-icon {
@@ -107,8 +106,8 @@
       font-size: 20px;
     }
 
-    h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; }
-    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; line-height: 1.6; }
+    h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; text-align: center; }
+    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; line-height: 1.6; text-align: center; }
 
     input {
       width: 100%;
@@ -124,8 +123,6 @@
       text-align: center;
     }
 
-    input:focus { border-color: var(--accent); outline: none; background: #2a2a2a; }
-
     button {
       width: 100%;
       padding: 16px;
@@ -136,40 +133,77 @@
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.2s ease;
     }
 
-    button:active { transform: scale(0.98); }
+    /* REFINED ROW LAYOUT FOR RESULTS */
+    #result { margin-top: 35px; display: none; animation: fadeIn 0.4s ease forwards; }
+    
+    .result-card { 
+      background: #111; 
+      border-radius: 18px; 
+      padding: 25px; 
+      border: 1px solid #333; 
+    }
 
-    /* Verification Results */
-    #result { margin-top: 30px; text-align: left; display: none; }
-    .result-card { background: #222; border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
-    .status-badge { color: #00b894; font-weight: 700; font-size: 11px; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
-    .data-row { margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-    .label { color: #555; font-size: 10px; text-transform: uppercase; font-weight: 700; }
-    .val { font-size: 14px; margin-top: 2px; color: #ddd; }
-
-    /* Professional Footer */
-    footer {
-      padding: 20px;
+    .status-header {
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
       text-align: center;
-      font-size: 11px;
-      color: #444;
-      border-top: 1px solid var(--border);
     }
+
+    .status-badge { 
+      color: #00b894; 
+      font-weight: 700; 
+      font-size: 11px; 
+      letter-spacing: 2px;
+    }
+
+    .data-row { 
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+      gap: 15px;
+    }
+
+    .label { 
+      color: #666; 
+      font-size: 10px; 
+      text-transform: uppercase; 
+      font-weight: 700; 
+      white-space: nowrap;
+      min-width: 100px;
+    }
+
+    .separator {
+      color: #444;
+      font-weight: 300;
+    }
+
+    .val { 
+      color: #eee; 
+      font-size: 14px; 
+      font-weight: 500; 
+      text-align: right;
+      word-break: break-word;
+    }
+
+    footer { padding: 25px; text-align: center; font-size: 11px; color: #444; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 480px) {
-      .container { padding: 30px 20px; border: none; background: transparent; }
-      .nav-links a { margin-left: 10px; font-size: 11px; }
+      .data-row { flex-direction: column; gap: 4px; align-items: flex-start; }
+      .val { text-align: left; }
+      .separator { display: none; }
     }
   </style>
 </head>
 <body>
 
   <nav class="nav-bar">
-    <div class="nav-brand">
-      <div class="brand-dot"></div> JIECEP-IBC
-    </div>
+    <div class="nav-brand"><div class="brand-dot"></div> JIECEP-IBC</div>
     <div class="nav-links">
       <a href="https://sites.google.com/view/jiecep-ibc/home">HOME</a>
       <a href="https://sites.google.com/view/jiecep-ibc/verify">RE-SCAN</a>
@@ -180,7 +214,7 @@
     <div class="container">
       <div class="header-icon">IBC</div>
       <h2>Verify Membership</h2>
-      <p class="instructions">Member IDs are automatically retrieved from the QR code. If the field is empty, please enter your ID manually.</p>
+      <p class="instructions">Official 2026 Registry Access</p>
       
       <input type="text" id="memberID" placeholder="IBC-26-XXXX">
       <button onclick="checkID()">Check Registry</button>
@@ -190,7 +224,7 @@
   </div>
 
   <footer>
-    &copy; 2026 Junior Institute of Electronics Engineers of the Philippines - Iligan Bay Chapter
+    &copy; 2026 JIECEP - Iligan Bay Chapter
   </footer>
 
 <script>
@@ -212,11 +246,20 @@
       res.style.display = "block";
       if (snapshot.exists()) {
         const d = snapshot.val();
-        let html = `<div class="result-card"><div class="status-badge">🟢 VERIFIED ACTIVE MEMBER</div>`;
+        let html = `<div class="result-card">
+                      <div class="status-header">
+                        <span class="status-badge">● VERIFIED ACTIVE MEMBER</span>
+                      </div>`;
+        
         for (let k in d) {
           let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
-          html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
+          html += `<div class="data-row">
+                     <span class="label">${lab}</span>
+                     <span class="separator">:</span>
+                     <span class="val">${d[k]}</span>
+                   </div>`;
         }
+        
         res.innerHTML = html + `</div>`;
       } else {
         res.innerHTML = `<div style="color:#fc8181; font-size:13px; text-align:center; padding:15px; background:rgba(252,129,129,0.1); border-radius:12px;">No records found for "${id}".</div>`;
