@@ -12,31 +12,25 @@
       --primary-gradient: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
       --bg-card: #1e1e1e;
       --text-main: #ffffff;
-      --text-dim: #999999;
       --border: #333333;
     }
     body { font-family: 'Inter', sans-serif; margin: 0; padding: 15px; background: transparent; color: var(--text-main); }
     .container { background: var(--bg-card); border-radius: 20px; padding: 25px; max-width: 400px; margin: 0 auto; border: 1px solid var(--border); box-sizing: border-box; }
     .header { text-align: center; margin-bottom: 20px; }
-    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; }
-    h2 { margin: 0; font-size: 18px; font-weight: 700; }
-    input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+    h2 { margin: 0; font-size: 18px; font-weight: 700; text-align: center; }
+    input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; }
     button { width: 100%; padding: 14px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
     #result { margin-top: 20px; display: none; }
     .result-content { padding: 15px; background: #252525; border: 1px solid var(--border); border-radius: 12px; }
-    .status-badge { background: #00b894; color: white; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-bottom: 12px; display: inline-block; }
     .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
     .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; }
     .val { color: var(--text-main); font-size: 13px; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <div class="logo-box">IBC</div>
-    <h2>JIECEP-IBC</h2>
-  </div>
+  <div class="header"><div class="logo-box">IBC</div><h2>JIECEP-IBC</h2></div>
   <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
   <button onclick="checkID()">Verify Member</button>
   <div id="result"></div>
@@ -61,30 +55,26 @@
       res.style.display = "block";
       if (snapshot.exists()) {
         const d = snapshot.val();
-        let html = `<div class="result-content"><div class="status-badge">VERIFIED ACTIVE</div>`;
+        let html = `<div class="result-content">`;
         for (let k in d) {
           let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
           html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
         }
         res.innerHTML = html + `</div>`;
       } else {
-        res.innerHTML = `<div style="color:#fc8181; padding:10px; border:1px solid #631c1c; border-radius:8px; font-size:12px;">Not Found: ${id}</div>`;
+        res.innerHTML = `<div style="color:#fc8181;">Not Found: ${id}</div>`;
       }
     });
   }
 
-  // LISTENER FOR THE GOOGLE SITE "SHOUT"
-  window.addEventListener("message", function(event) {
-    if (event.data && event.data.memberID) {
-      document.getElementById('memberID').value = event.data.memberID.toUpperCase();
+  // AUTO-CATCHER
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if (id) {
+      document.getElementById('memberID').value = id.toUpperCase();
       setTimeout(checkID, 500);
     }
-  });
-
-  // Backup: Check URL directly
-  window.onload = function() {
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (id) { document.getElementById('memberID').value = id.toUpperCase(); setTimeout(checkID, 500); }
   };
 </script>
 </body>
