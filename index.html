@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
+      --bg-card: #1e1e1e;
+      --text-main: #ffffff;
+      --border: #333333;
+    }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 10px; background: transparent; color: var(--text-main); }
+    .container { background: var(--bg-card); border-radius: 20px; padding: 25px; max-width: 440px; margin: 0 auto; border: 1px solid var(--border); box-sizing: border-box; }
+    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+    h2 { margin: 0; font-size: 20px; text-align: center; margin-bottom: 20px; }
+    input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; }
+    button { width: 100%; padding: 15px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    #result { margin-top: 20px; display: none; }
+    .result-content { padding: 15px; background: #252525; border: 1px solid var(--border); border-radius: 12px; }
+    .status-badge { background: #00b894; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-bottom: 12px; display: inline-block; }
+    .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; }
+    .val { color: var(--text-main); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo-box">IBC</div>
+  <h2>JIECEP-IBC</h2>
+  <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
+  <button onclick="checkID()">Verify Member</button>
+  <div id="result"></div>
+</div>
+
+<script>
+  // YOUR FIREBASE CONFIG
+  const firebaseConfig = {
+  apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
+  authDomain: "jiecep-ibc-registry.firebaseapp.com",
+  databaseURL: "https://jiecep-ibc-registry-default-rtdb.firebaseio.com",
+  projectId: "jiecep-ibc-registry",
+  storageBucket: "jiecep-ibc-registry.firebasestorage.app",
+  messagingSenderId: "814485997647",
+  appId: "1:814485997647:web:4b688a43ed42635875c23a",
+  measurementId: "G-KTH8HZM5P3"
+};
+
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function checkID() {
+    const id = document.getElementById('memberID').value.trim().toUpperCase();
+    if(!id) return;
+    const resultDiv = document.getElementById('result');
+
+    db.ref('members/' + id).once('value', (snapshot) => {
+      resultDiv.style.display = "block";
+      if (snapshot.exists()) {
+        const d = snapshot.val();
+        let rows = `<div class="result-content"><div class="status-badge">VERIFIED MEMBER</div>`;
+        for (let key in d) {
+          let label = key.replace(/([A-Z])/g, ' $1').toUpperCase();
+          rows += `<div class="data-row"><span class="label">${label}</span><span class="val">${d[key]}</span></div>`;
+        }
+        rows += `</div>`;
+        resultDiv.innerHTML = rows;
+      } else {
+        resultDiv.innerHTML = `<div style="color:#fc8181; padding:10px; border:1px solid #631c1c; border-radius:8px; font-size:12px;">ID "${id}" not found.</div>`;
+      }
+    });
+  }
+
+  // THE ULTIMATE GOOGLE SITES PARAMETER CATCHER
+  function catchID() {
+    let id = null;
+    
+    // Check 1: Direct URL of the Iframe
+    id = new URLSearchParams(window.location.search).get('id');
+
+    // Check 2: Parent Page URL (Piercing the Sandbox)
+    if (!id) {
+      try {
+        const parentURL = window.parent.location.href;
+        id = new URLSearchParams(new URL(parentURL).search).get('id');
+      } catch (e) {
+        // Check 3: Referrer (Last resort for cross-origin)
+        if (document.referrer) {
+          try {
+            id = new URLSearchParams(new URL(document.referrer).search).get('id');
+          } catch(err) {}
+        }
+      }
+    }
+
+    if (id) {
+      document.getElementById('memberID').value = id.toUpperCase();
+      setTimeout(checkID, 800); 
+    }
+  }
+
+  window.onload = catchID;
+</script>
+</body>
+</html>
