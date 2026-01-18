@@ -9,34 +9,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-gradient: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
-      --bg-card: #1e1e1e;
-      --text-main: #ffffff;
+      --primary: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
+      --bg: #1e1e1e;
       --border: #333333;
     }
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 15px; background: transparent; color: var(--text-main); }
-    .container { background: var(--bg-card); border-radius: 20px; padding: 25px; max-width: 400px; margin: 0 auto; border: 1px solid var(--border); box-sizing: border-box; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
-    h2 { margin: 0; font-size: 18px; font-weight: 700; text-align: center; }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 15px; background: transparent; color: white; display: flex; justify-content: center; }
+    .container { background: var(--bg); border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; border: 1px solid var(--border); box-sizing: border-box; }
+    .logo-box { width: 50px; height: 50px; background: var(--primary); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    h2 { margin: 0; font-size: 18px; text-align: center; margin-bottom: 20px; }
+    
+    /* Sleek Auto-fill Notification */
+    #auto-hint { 
+      display: none; 
+      background: rgba(23, 155, 196, 0.1); 
+      border: 1px solid #179bc4; 
+      padding: 10px; 
+      border-radius: 8px; 
+      margin-bottom: 15px; 
+      font-size: 12px; 
+      text-align: center;
+      cursor: pointer;
+    }
+
     input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; }
-    button { width: 100%; padding: 14px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-    #result { margin-top: 20px; display: none; }
-    .result-content { padding: 15px; background: #252525; border: 1px solid var(--border); border-radius: 12px; }
+    button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    #result { margin-top: 20px; display: none; background: #252525; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
     .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
-    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; }
-    .val { color: var(--text-main); font-size: 13px; }
+    .label { color: #666; font-size: 9px; text-transform: uppercase; display: block; }
+    .val { font-size: 13px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <div class="header"><div class="logo-box">IBC</div><h2>JIECEP-IBC</h2></div>
+  <div class="logo-box">IBC</div>
+  <h2>JIECEP-IBC Verifier</h2>
+  
+  <div id="auto-hint" onclick="manualTrigger()">
+    ✨ <b>Scan Detected!</b> Tap here to auto-fill ID.
+  </div>
+
   <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
   <button onclick="checkID()">Verify Member</button>
   <div id="result"></div>
 </div>
 
 <script>
+  // YOUR FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
     authDomain: "jiecep-ibc-registry.firebaseapp.com",
@@ -47,33 +65,43 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  function checkID() {
-    const id = document.getElementById('memberID').value.trim().toUpperCase();
+  let detectedID = "";
+
+  function checkID(providedID) {
+    const id = providedID || document.getElementById('memberID').value.trim().toUpperCase();
     if(!id) return;
     db.ref('members/' + id).once('value', (snapshot) => {
       const res = document.getElementById('result');
       res.style.display = "block";
       if (snapshot.exists()) {
         const d = snapshot.val();
-        let html = `<div class="result-content">`;
+        let html = `<div>`;
         for (let k in d) {
           let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
           html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
         }
         res.innerHTML = html + `</div>`;
       } else {
-        res.innerHTML = `<div style="color:#fc8181;">Not Found: ${id}</div>`;
+        res.innerHTML = `<div style="color:#fc8181;">Record not found.</div>`;
       }
     });
   }
 
-  // AUTO-CATCHER
+  function manualTrigger() {
+    if(detectedID) {
+      document.getElementById('memberID').value = detectedID;
+      checkID(detectedID);
+      document.getElementById('auto-hint').style.display = "none";
+    }
+  }
+
   window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    if (id) {
-      document.getElementById('memberID').value = id.toUpperCase();
-      setTimeout(checkID, 500);
+    // Attempt to grab from URL
+    const params = new URLSearchParams(window.location.search);
+    detectedID = params.get('id');
+
+    if (detectedID) {
+      document.getElementById('auto-hint').style.display = "block";
     }
   };
 </script>
