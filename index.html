@@ -1,108 +1,216 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JIECEP-IBC Verifier</title>
+  
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --primary-gradient: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
-      --bg-card: #1e1e1e;
+      --bg-dark: #121212;
+      --card-bg: #1e1e1e;
       --text-main: #ffffff;
+      --text-dim: #999999;
       --border: #333333;
     }
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 10px; background: transparent; color: var(--text-main); }
-    .container { background: var(--bg-card); border-radius: 20px; padding: 25px; max-width: 440px; margin: 0 auto; border: 1px solid var(--border); box-sizing: border-box; }
-    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
-    h2 { margin: 0; font-size: 20px; text-align: center; margin-bottom: 20px; }
-    input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; }
-    button { width: 100%; padding: 15px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-    #result { margin-top: 20px; display: none; }
-    .result-content { padding: 15px; background: #252525; border: 1px solid var(--border); border-radius: 12px; }
-    .status-badge { background: #00b894; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-bottom: 12px; display: inline-block; }
-    .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; }
-    .val { color: var(--text-main); font-size: 13px; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: transparent; /* Seamless with Google Sites */
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+      height: auto; /* Dynamic height adjustment */
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo-box {
+      width: 55px;
+      height: 55px;
+      background: var(--primary-gradient);
+      margin: 0 auto 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .desc { color: var(--text-dim); font-size: 11px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      background: #2a2a2a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      color: white;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    #result {
+      margin-top: 25px;
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .result-content {
+      padding: 18px;
+      background: #252525;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .badge {
+      background: #00b894;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+
+    .data-row {
+      margin-bottom: 12px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 8px;
+    }
+
+    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+    .val { color: var(--text-main); font-size: 13px; font-weight: 500; }
+
+    .error-box { background: #2d1a1a; border: 1px solid #631c1c; color: #fc8181; padding: 15px; border-radius: 12px; font-size: 13px; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="logo-box">IBC</div>
-  <h2>JIECEP-IBC</h2>
+  <div class="header">
+    <div class="logo-box">IBC</div>
+    <h2>JIECEP-IBC</h2>
+    <p class="desc">Membership Verification</p>
+  </div>
+  
   <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
   <button onclick="checkID()">Verify Member</button>
+
   <div id="result"></div>
 </div>
 
 <script>
-  // YOUR FIREBASE CONFIG
+  // 1. FIREBASE CONFIGURATION (Replace with your Web App values)
   const firebaseConfig = {
-  apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
-  authDomain: "jiecep-ibc-registry.firebaseapp.com",
-  databaseURL: "https://jiecep-ibc-registry-default-rtdb.firebaseio.com",
-  projectId: "jiecep-ibc-registry",
-  storageBucket: "jiecep-ibc-registry.firebasestorage.app",
-  messagingSenderId: "814485997647",
-  appId: "1:814485997647:web:4b688a43ed42635875c23a",
-  measurementId: "G-KTH8HZM5P3"
-};
+    apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
+    authDomain: "jiecep-ibc-registry.firebaseapp.com",
+    databaseURL: "https://jiecep-ibc-registry-default-rtdb.firebaseio.com",
+    projectId: "jiecep-ibc-registry",
+    storageBucket: "jiecep-ibc-registry.firebasestorage.app",
+    messagingSenderId: "814485997647",
+    appId: "1:814485997647:web:4b688a43ed42635875c23a",
+    measurementId: "G-KTH8HZM5P3"
+  };
 
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
+  // 2. VERIFICATION LOGIC
   function checkID() {
     const id = document.getElementById('memberID').value.trim().toUpperCase();
-    if(!id) return;
     const resultDiv = document.getElementById('result');
+    if(!id) return;
 
     db.ref('members/' + id).once('value', (snapshot) => {
       resultDiv.style.display = "block";
       if (snapshot.exists()) {
-        const d = snapshot.val();
-        let rows = `<div class="result-content"><div class="status-badge">VERIFIED MEMBER</div>`;
-        for (let key in d) {
+        const data = snapshot.val();
+        let rows = `<div class="result-content"><div class="badge">VERIFIED ACTIVE</div>`;
+        
+        // Loop through all database keys automatically
+        for (let key in data) {
           let label = key.replace(/([A-Z])/g, ' $1').toUpperCase();
-          rows += `<div class="data-row"><span class="label">${label}</span><span class="val">${d[key]}</span></div>`;
+          rows += `<div class="data-row"><span class="label">${label}</span><span class="val">${data[key]}</span></div>`;
         }
+        
         rows += `</div>`;
         resultDiv.innerHTML = rows;
       } else {
-        resultDiv.innerHTML = `<div style="color:#fc8181; padding:10px; border:1px solid #631c1c; border-radius:8px; font-size:12px;">ID "${id}" not found.</div>`;
+        resultDiv.innerHTML = `<div class="error-box"><strong>ID Not Found</strong><br>Record ${id} is not in the 2026 registry.</div>`;
       }
     });
   }
 
-  // THE ULTIMATE GOOGLE SITES PARAMETER CATCHER
-  function catchID() {
+  // 3. OMNI-CATCH PARAMETER LOGIC
+  function catchURLParameter() {
     let id = null;
     
-    // Check 1: Direct URL of the Iframe
-    id = new URLSearchParams(window.location.search).get('id');
+    // Method A: Direct check on GitHub URL
+    const params = new URLSearchParams(window.location.search);
+    id = params.get('id') || params.get('ID') || params.get('verify');
 
-    // Check 2: Parent Page URL (Piercing the Sandbox)
-    if (!id) {
+    // Method B: Referrer check (Google Sites parent URL)
+    if (!id && document.referrer) {
       try {
-        const parentURL = window.parent.location.href;
-        id = new URLSearchParams(new URL(parentURL).search).get('id');
-      } catch (e) {
-        // Check 3: Referrer (Last resort for cross-origin)
-        if (document.referrer) {
-          try {
-            id = new URLSearchParams(new URL(document.referrer).search).get('id');
-          } catch(err) {}
-        }
-      }
+        const refParams = new URLSearchParams(new URL(document.referrer).search);
+        id = refParams.get('id') || refParams.get('ID');
+      } catch(e) {}
     }
 
     if (id) {
       document.getElementById('memberID').value = id.toUpperCase();
-      setTimeout(checkID, 800); 
+      // Wait for Firebase connection to initialize before searching
+      setTimeout(checkID, 1000); 
     }
   }
 
-  window.onload = catchID;
+  window.onload = catchURLParameter;
 </script>
 </body>
 </html>
