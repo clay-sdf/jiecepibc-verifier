@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JIECEP-IBC Verifier</title>
+  <title>Verification | JIECEP-IBC</title>
   
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
       --primary: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
-      --bg-dark: #121212;
-      --card-bg: #1e1e1e;
-      --nav-bg: rgba(18, 18, 18, 0.95);
-      --border: #333333;
+      --bg-dark: #0f0f0f;
+      --card-bg: #1a1a1a;
+      --nav-bg: rgba(20, 20, 20, 0.95);
+      --border: #2d2d2d;
       --text: #ffffff;
+      --accent: #179bc4;
     }
 
     body {
@@ -27,11 +28,10 @@
       color: var(--text);
       display: flex;
       flex-direction: column;
-      align-items: center;
       min-height: 100vh;
     }
 
-    /* Mimicking Google Sites Navigation */
+    /* Professional Navigation Bar */
     .nav-bar {
       width: 100%;
       height: 64px;
@@ -45,99 +45,155 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
 
     .nav-brand {
       font-weight: 700;
-      font-size: 18px;
+      font-size: 1.1rem;
       letter-spacing: -0.5px;
-      background: var(--primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    .brand-dot { height: 10px; width: 10px; background: var(--primary); border-radius: 50%; }
 
     .nav-links a {
       color: var(--text);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       margin-left: 20px;
-      opacity: 0.8;
-      transition: opacity 0.3s;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
     }
 
-    .nav-links a:hover {
-      opacity: 1;
-      border-bottom: 2px solid #179bc4;
-      padding-bottom: 5px;
-    }
+    .nav-links a:hover { opacity: 1; color: var(--accent); }
 
-    /* Content Styling */
+    /* Main Content - No Dead Space */
     .content-area {
-      padding: 40px 20px;
-      width: 100%;
+      flex: 1; /* Pushes footer down */
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(circle at top right, #1a1a1a, #0f0f0f);
     }
 
     .container {
       background: var(--card-bg);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 420px;
+      border-radius: 24px;
+      padding: 40px 30px;
+      max-width: 440px;
       width: 100%;
       border: 1px solid var(--border);
       box-sizing: border-box;
+      text-align: center;
     }
 
-    .logo-box {
-      width: 50px;
-      height: 50px;
+    .header-icon {
+      width: 60px;
+      height: 60px;
       background: var(--primary);
-      margin: 0 auto 15px;
-      border-radius: 12px;
+      margin: 0 auto 20px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
     }
 
-    h2 { margin: 0; font-size: 20px; text-align: center; margin-bottom: 20px; }
-    
-    input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; font-family: 'Inter'; }
-    button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-    
-    #result { margin-top: 25px; display: none; background: #252525; padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+    h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; }
+    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; line-height: 1.6; }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      background: #252525;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      color: white;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      font-family: 'Inter';
+      text-align: center;
+    }
+
+    input:focus { border-color: var(--accent); outline: none; background: #2a2a2a; }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    /* Verification Results */
+    #result { margin-top: 30px; text-align: left; display: none; }
+    .result-card { background: #222; border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
+    .status-badge { color: #00b894; font-weight: 700; font-size: 11px; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
     .data-row { margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-    .label { color: #666; font-size: 10px; text-transform: uppercase; display: block; font-weight: 600; }
-    .val { font-size: 14px; margin-top: 2px; display: block; }
+    .label { color: #555; font-size: 10px; text-transform: uppercase; font-weight: 700; }
+    .val { font-size: 14px; margin-top: 2px; color: #ddd; }
+
+    /* Professional Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #444;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 30px 20px; border: none; background: transparent; }
+      .nav-links a { margin-left: 10px; font-size: 11px; }
+    }
   </style>
 </head>
 <body>
 
   <nav class="nav-bar">
-    <div class="nav-brand">JIECEP-IBC</div>
+    <div class="nav-brand">
+      <div class="brand-dot"></div> JIECEP-IBC
+    </div>
     <div class="nav-links">
       <a href="https://sites.google.com/view/jiecep-ibc/home">HOME</a>
-      <a href="https://sites.google.com/view/jiecep-ibc/verify">VERIFY</a>
+      <a href="https://sites.google.com/view/jiecep-ibc/verify">RE-SCAN</a>
     </div>
   </nav>
 
   <div class="content-area">
     <div class="container">
-      <div class="logo-box">IBC</div>
-      <h2>Member Verification</h2>
+      <div class="header-icon">IBC</div>
+      <h2>Verify Membership</h2>
+      <p class="instructions">Member IDs are automatically retrieved from the QR code. If the field is empty, please enter your ID manually.</p>
       
-      <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
+      <input type="text" id="memberID" placeholder="IBC-26-XXXX">
       <button onclick="checkID()">Check Registry</button>
       
       <div id="result"></div>
     </div>
   </div>
 
+  <footer>
+    &copy; 2026 Junior Institute of Electronics Engineers of the Philippines - Iligan Bay Chapter
+  </footer>
+
 <script>
-  // YOUR FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
     authDomain: "jiecep-ibc-registry.firebaseapp.com",
@@ -156,14 +212,14 @@
       res.style.display = "block";
       if (snapshot.exists()) {
         const d = snapshot.val();
-        let html = `<div><span style="color:#00b894; font-weight:700; font-size:12px; margin-bottom:10px; display:block;">● VERIFIED ACTIVE</span>`;
+        let html = `<div class="result-card"><div class="status-badge">🟢 VERIFIED ACTIVE MEMBER</div>`;
         for (let k in d) {
           let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
           html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
         }
         res.innerHTML = html + `</div>`;
       } else {
-        res.innerHTML = `<div style="color:#fc8181; font-size:13px; text-align:center;">ID "${id}" not found in 2026 registry.</div>`;
+        res.innerHTML = `<div style="color:#fc8181; font-size:13px; text-align:center; padding:15px; background:rgba(252,129,129,0.1); border-radius:12px;">No records found for "${id}".</div>`;
       }
     });
   }
