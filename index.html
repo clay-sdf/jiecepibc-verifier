@@ -4,45 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JIECEP-IBC Verifier</title>
-  
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary-gradient: linear-gradient(135deg, #179bc4 0%, #5829b5 100%);
-      --bg-dark: #121212;
-      --card-bg: #1e1e1e;
+      --bg-card: #1e1e1e;
       --text-main: #ffffff;
       --text-dim: #999999;
       --border: #333333;
     }
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; background-color: transparent; color: var(--text-main); display: flex; justify-content: center; }
-    .container { background: var(--card-bg); border-radius: 20px; padding: 30px; max-width: 420px; width: 100%; border: 1px solid var(--border); box-sizing: border-box; }
-    .header { text-align: center; margin-bottom: 25px; }
-    .logo-box { width: 55px; height: 55px; background: var(--primary-gradient); margin: 0 auto 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
-    h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-    .desc { color: var(--text-dim); font-size: 11px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
-    input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 15px; font-family: 'Inter', sans-serif; }
-    button { width: 100%; padding: 15px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    #result { margin-top: 25px; display: none; animation: fadeIn 0.4s ease forwards; }
-    .result-content { padding: 18px; background: #252525; border: 1px solid var(--border); border-radius: 14px; }
-    .badge { background: #00b894; color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-bottom: 15px; display: inline-block; }
-    .data-row { margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 2px; }
-    .val { color: var(--text-main); font-size: 13px; font-weight: 500; }
-    .error-box { background: #2d1a1a; border: 1px solid #631c1c; color: #fc8181; padding: 15px; border-radius: 12px; font-size: 13px; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 15px; background: transparent; color: var(--text-main); }
+    .container { background: var(--bg-card); border-radius: 20px; padding: 25px; max-width: 400px; margin: 0 auto; border: 1px solid var(--border); box-sizing: border-box; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .logo-box { width: 50px; height: 50px; background: var(--primary-gradient); margin: 0 auto 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; }
+    h2 { margin: 0; font-size: 18px; font-weight: 700; }
+    input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; color: white; box-sizing: border-box; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+    button { width: 100%; padding: 14px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    #result { margin-top: 20px; display: none; }
+    .result-content { padding: 15px; background: #252525; border: 1px solid var(--border); border-radius: 12px; }
+    .status-badge { background: #00b894; color: white; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-bottom: 12px; display: inline-block; }
+    .data-row { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+    .label { color: #666; font-weight: 600; font-size: 9px; text-transform: uppercase; display: block; }
+    .val { color: var(--text-main); font-size: 13px; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
-
 <div class="container">
   <div class="header">
     <div class="logo-box">IBC</div>
     <h2>JIECEP-IBC</h2>
-    <p class="desc">Membership Verification</p>
   </div>
   <input type="text" id="memberID" placeholder="Enter ID (e.g. IBC-26-001)">
   <button onclick="checkID()">Verify Member</button>
@@ -50,68 +43,48 @@
 </div>
 
 <script>
-  // 1. IMMEDIATE DEBUG START
-  console.log("Verifier Script Loaded");
-
-  // 2. FIREBASE CONFIGURATION
   const firebaseConfig = {
     apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
     authDomain: "jiecep-ibc-registry.firebaseapp.com",
     databaseURL: "https://jiecep-ibc-registry-default-rtdb.firebaseio.com",
     projectId: "jiecep-ibc-registry",
-    storageBucket: "jiecep-ibc-registry.firebasestorage.app",
-    messagingSenderId: "814485997647",
-    appId: "1:814485997647:web:4b688a43ed42635875c23a",
-    measurementId: "G-KTH8HZM5P3"
+    appId: "1:814485997647:web:4b688a43ed42635875c23a"
   };
-
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
   function checkID() {
     const id = document.getElementById('memberID').value.trim().toUpperCase();
-    const resultDiv = document.getElementById('result');
     if(!id) return;
-
     db.ref('members/' + id).once('value', (snapshot) => {
-      resultDiv.style.display = "block";
+      const res = document.getElementById('result');
+      res.style.display = "block";
       if (snapshot.exists()) {
-        const data = snapshot.val();
-        let rows = `<div class="result-content"><div class="badge">VERIFIED ACTIVE</div>`;
-        for (let key in data) {
-          let label = key.replace(/([A-Z])/g, ' $1').toUpperCase();
-          rows += `<div class="data-row"><span class="label">${label}</span><span class="val">${data[key]}</span></div>`;
+        const d = snapshot.val();
+        let html = `<div class="result-content"><div class="status-badge">VERIFIED ACTIVE</div>`;
+        for (let k in d) {
+          let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
+          html += `<div class="data-row"><span class="label">${lab}</span><span class="val">${d[k]}</span></div>`;
         }
-        rows += `</div>`;
-        resultDiv.innerHTML = rows;
+        res.innerHTML = html + `</div>`;
       } else {
-        resultDiv.innerHTML = `<div class="error-box"><strong>ID Not Found</strong><br>Record ${id} is not in the 2026 registry.</div>`;
+        res.innerHTML = `<div style="color:#fc8181; padding:10px; border:1px solid #631c1c; border-radius:8px; font-size:12px;">Not Found: ${id}</div>`;
       }
     });
   }
 
-  // 3. OMNI-CATCH PARAMETER LOGIC
+  // LISTENER FOR THE GOOGLE SITE "SHOUT"
+  window.addEventListener("message", function(event) {
+    if (event.data && event.data.memberID) {
+      document.getElementById('memberID').value = event.data.memberID.toUpperCase();
+      setTimeout(checkID, 500);
+    }
+  });
+
+  // Backup: Check URL directly
   window.onload = function() {
-    // ALERT FIRST to see if window.onload is even firing
-    alert("Script started. Referrer: " + document.referrer);
-
-    let id = null;
-    const params = new URLSearchParams(window.location.search);
-    id = params.get('id') || params.get('ID');
-
-    if (!id && document.referrer) {
-      try {
-        const refURL = new URL(document.referrer);
-        id = refURL.searchParams.get('id') || refURL.searchParams.get('ID');
-      } catch(e) {
-        console.log("Referrer access denied or invalid");
-      }
-    }
-
-    if (id) {
-      document.getElementById('memberID').value = id.toUpperCase();
-      setTimeout(checkID, 1200); 
-    }
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (id) { document.getElementById('memberID').value = id.toUpperCase(); setTimeout(checkID, 500); }
   };
 </script>
 </body>
