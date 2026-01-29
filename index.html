@@ -31,7 +31,6 @@
       min-height: 100vh;
     }
 
-    /* Professional Navigation Bar */
     .nav-bar {
       width: 100%;
       height: 64px;
@@ -51,7 +50,6 @@
     .nav-brand {
       font-weight: 700;
       font-size: 1.1rem;
-      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -66,13 +64,9 @@
       font-weight: 500;
       margin-left: 20px;
       opacity: 0.7;
-      transition: all 0.3s ease;
       text-transform: uppercase;
     }
 
-    .nav-links a:hover { opacity: 1; color: var(--accent); }
-
-    /* Main Content */
     .content-area {
       flex: 1;
       display: flex;
@@ -86,118 +80,55 @@
       background: var(--card-bg);
       border-radius: 24px;
       padding: 40px 30px;
-      max-width: 500px; /* Slightly wider for row layout */
+      max-width: 500px;
       width: 100%;
       border: 1px solid var(--border);
       box-sizing: border-box;
     }
 
     .header-icon {
-      width: 60px;
-      height: 60px;
+      width: 60px; height: 60px;
       background: var(--primary);
       margin: 0 auto 20px;
       border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800;
     }
 
-    h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.8px; text-align: center; }
-    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; line-height: 1.6; text-align: center; }
+    h2 { margin: 0; font-size: 24px; font-weight: 700; text-align: center; }
+    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; text-align: center; }
 
     input {
-      width: 100%;
-      padding: 16px;
-      background: #252525;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 15px;
-      color: white;
-      box-sizing: border-box;
-      margin-bottom: 15px;
-      font-family: 'Inter';
-      text-align: center;
+      width: 100%; padding: 16px;
+      background: #252525; border: 1px solid var(--border);
+      border-radius: 12px; color: white;
+      margin-bottom: 15px; text-align: center;
     }
 
     button {
-      width: 100%;
-      padding: 16px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
+      width: 100%; padding: 16px;
+      background: var(--primary); color: white;
+      border: none; border-radius: 12px;
+      font-weight: 600; cursor: pointer;
     }
 
-    /* REFINED ROW LAYOUT FOR RESULTS */
-    #result { margin-top: 35px; display: none; animation: fadeIn 0.4s ease forwards; }
-    
-    .result-card { 
-      background: #111; 
-      border-radius: 18px; 
-      padding: 25px; 
-      border: 1px solid #333; 
-    }
+    #result { margin-top: 35px; display: none; }
+    .result-card { background: #111; border-radius: 18px; padding: 25px; border: 1px solid #333; }
+    .status-header { border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+    .status-badge { color: #00b894; font-weight: 700; font-size: 11px; letter-spacing: 2px; }
 
-    .status-header {
-      border-bottom: 1px solid #333;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+    .data-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; gap: 15px; }
+    .label { color: #666; font-size: 10px; text-transform: uppercase; font-weight: 700; min-width: 100px; }
+    .val { color: #eee; font-size: 14px; font-weight: 500; text-align: right; word-break: break-word; }
 
-    .status-badge { 
-      color: #00b894; 
-      font-weight: 700; 
-      font-size: 11px; 
-      letter-spacing: 2px;
-    }
-
-    .data-row { 
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 14px;
-      gap: 15px;
-    }
-
-    .label { 
-      color: #666; 
-      font-size: 10px; 
-      text-transform: uppercase; 
-      font-weight: 700; 
-      white-space: nowrap;
-      min-width: 100px;
-    }
-
-    .separator {
-      color: #444;
-      font-weight: 300;
-    }
-
-    .val { 
-      color: #eee; 
-      font-size: 14px; 
-      font-weight: 500; 
-      text-align: right;
-      word-break: break-word;
+    .admin-btn {
+      margin-top: 20px; width: 100%;
+      background: transparent; border: 1px solid #444;
+      color: #888; font-size: 11px; padding: 10px;
+      border-radius: 8px; cursor: pointer;
     }
 
     footer { padding: 25px; text-align: center; font-size: 11px; color: #444; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    @media (max-width: 480px) {
-      .data-row { flex-direction: column; gap: 4px; align-items: flex-start; }
-      .val { text-align: left; }
-      .separator { display: none; }
-    }
   </style>
 </head>
 <body>
@@ -223,11 +154,10 @@
     </div>
   </div>
 
-  <footer>
-    &copy; 2026 JIECEP - Iligan Bay Chapter
-  </footer>
+  <footer>&copy; 2026 JIECEP - Iligan Bay Chapter</footer>
 
 <script>
+  // Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCP9IubRBz_OhCAD1eSdLTjea6GvfSwMps",
     authDomain: "jiecep-ibc-registry.firebaseapp.com",
@@ -238,33 +168,60 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
+  // Admin Configuration
+  const ADMIN_PASS = "IBC_ADMIN_2026"; 
+  const PUBLIC_FIELDS = ["fullName", "status", "membershipStatus"];
+
   function checkID() {
     const id = document.getElementById('memberID').value.trim().toUpperCase();
     if(!id) return;
+    
     db.ref('members/' + id).once('value', (snapshot) => {
       const res = document.getElementById('result');
       res.style.display = "block";
       if (snapshot.exists()) {
-        const d = snapshot.val();
-        let html = `<div class="result-card">
-                      <div class="status-header">
-                        <span class="status-badge">● VERIFIED ACTIVE MEMBER</span>
-                      </div>`;
-        
-        for (let k in d) {
-          let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
-          html += `<div class="data-row">
-                     <span class="label">${lab}</span>
-                     <span class="separator">:</span>
-                     <span class="val">${d[k]}</span>
-                   </div>`;
-        }
-        
-        res.innerHTML = html + `</div>`;
+        renderProfile(snapshot.val(), false);
       } else {
         res.innerHTML = `<div style="color:#fc8181; font-size:13px; text-align:center; padding:15px; background:rgba(252,129,129,0.1); border-radius:12px;">No records found for "${id}".</div>`;
       }
     });
+  }
+
+  function renderProfile(data, isAdmin) {
+    const res = document.getElementById('result');
+    let html = `<div class="result-card">
+                  <div class="status-header">
+                    <span class="status-badge">● VERIFIED ACTIVE MEMBER</span>
+                  </div>`;
+    
+    for (let k in data) {
+      // Security Logic: Skip private fields if not Admin
+      if (!isAdmin && !PUBLIC_FIELDS.includes(k)) continue;
+
+      let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
+      html += `<div class="data-row">
+                 <span class="label">${lab}</span>
+                 <span class="val">${data[k]}</span>
+               </div>`;
+    }
+
+    if (!isAdmin) {
+      html += `<button class="admin-btn" onclick="requestAdminAccess()">ADMIN: VIEW FULL PROFILE</button>`;
+    }
+
+    res.innerHTML = html + `</div>`;
+  }
+
+  function requestAdminAccess() {
+    const pass = prompt("Enter Admin Keypass to view sensitive member data:");
+    if (pass === ADMIN_PASS) {
+      const id = document.getElementById('memberID').value.trim().toUpperCase();
+      db.ref('members/' + id).once('value', (snapshot) => {
+        renderProfile(snapshot.val(), true);
+      });
+    } else if (pass !== null) {
+      alert("Unauthorized access denied.");
+    }
   }
 
   window.onload = function() {
