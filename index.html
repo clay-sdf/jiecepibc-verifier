@@ -31,6 +31,7 @@
       min-height: 100vh;
     }
 
+    /* Navbar */
     .nav-bar {
       width: 100%;
       height: 64px;
@@ -65,8 +66,12 @@
       margin-left: 20px;
       opacity: 0.7;
       text-transform: uppercase;
+      transition: opacity 0.3s ease;
     }
 
+    .nav-links a:hover { opacity: 1; }
+
+    /* Layout */
     .content-area {
       flex: 1;
       display: flex;
@@ -83,7 +88,7 @@
       max-width: 500px;
       width: 100%;
       border: 1px solid var(--border);
-      box-sizing: border-box;
+      box-sizing: border-box; /* Ensures padding doesn't push the card out */
     }
 
     .header-icon {
@@ -92,27 +97,46 @@
       margin: 0 auto 20px;
       border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      color: white; font-weight: 800;
+      color: white; font-weight: 800; font-size: 20px;
     }
 
-    h2 { margin: 0; font-size: 24px; font-weight: 700; text-align: center; }
-    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; text-align: center; }
+    h2 { margin: 0; font-size: 24px; font-weight: 700; text-align: center; letter-spacing: -0.8px; }
+    .instructions { color: #888; font-size: 13px; margin: 10px 0 25px; text-align: center; line-height: 1.6; }
 
+    /* Inputs & Buttons - Fixed Layout */
     input {
-      width: 100%; padding: 16px;
-      background: #252525; border: 1px solid var(--border);
-      border-radius: 12px; color: white;
-      margin-bottom: 15px; text-align: center;
+      width: 100%;
+      padding: 16px;
+      background: #252525;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      color: white;
+      box-sizing: border-box; /* CRITICAL FIX: Keeps input inside container */
+      margin-bottom: 15px;
+      font-family: 'Inter';
+      text-align: center;
+      display: block;
     }
 
     button {
-      width: 100%; padding: 16px;
-      background: var(--primary); color: white;
-      border: none; border-radius: 12px;
-      font-weight: 600; cursor: pointer;
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-sizing: border-box; /* CRITICAL FIX: Keeps button inside container */
+      transition: transform 0.2s ease;
     }
 
-    #result { margin-top: 35px; display: none; }
+    button:active { transform: scale(0.98); }
+
+    /* Results Card */
+    #result { margin-top: 35px; display: none; animation: fadeIn 0.4s ease forwards; }
     .result-card { background: #111; border-radius: 18px; padding: 25px; border: 1px solid #333; }
     .status-header { border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
     .status-badge { color: #00b894; font-weight: 700; font-size: 11px; letter-spacing: 2px; }
@@ -129,6 +153,13 @@
     }
 
     footer { padding: 25px; text-align: center; font-size: 11px; color: #444; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 480px) {
+      .data-row { flex-direction: column; gap: 4px; align-items: flex-start; }
+      .val { text-align: left; }
+    }
   </style>
 </head>
 <body>
@@ -168,7 +199,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Admin Configuration
+  // Admin Setup
   const ADMIN_PASS = "IBC_ADMIN_2026"; 
   const PUBLIC_FIELDS = ["fullName", "status", "membershipStatus"];
 
@@ -195,7 +226,7 @@
                   </div>`;
     
     for (let k in data) {
-      // Security Logic: Skip private fields if not Admin
+      // Privacy logic: Show only name and status unless admin access is granted
       if (!isAdmin && !PUBLIC_FIELDS.includes(k)) continue;
 
       let lab = k.replace(/([A-Z])/g, ' $1').toUpperCase();
